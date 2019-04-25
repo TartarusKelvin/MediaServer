@@ -1,0 +1,103 @@
+<html>
+	<head>
+
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+		<link rel="stylesheet" href="Buttton.css">
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<a class="navbar-brand" href="#">DND</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav">
+					<li class="nav-item active">
+						<a class="nav-link" href="index.html">Image Viewer<span class="sr-only">(current)</span></a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Media Handler</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="InvHandler.html">Item Weights</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="container">
+		<div id=header> </div>
+			<div class="row">
+				<div class="col">
+					<input onclick="updatePlaylist()" class="btn btn-primary" type="submit"  value="Update">
+					<input onclick="command('toggle')" class="btn btn-primary" type="submit"  value="Start/Stop">
+					<input onclick="command('skip')" class="btn btn-primary" type="submit"  value="Skip">
+					<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						Playlist Select
+					</button>
+					<div class="dropdown-menu" id="PlaylistSelect">
+						<a class="dropdown-item" href="#">Action</a>
+						<a class="dropdown-item" href="#">Another action</a>
+						<a class="dropdown-item" href="#">Something else here</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="#">Separated link</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script>
+		function Playlist(play)
+{
+
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.open( "POST", "mpcService.php?command=load&playlist="+playlists[play], false ); // false for synchronous request
+
+	xmlHttp.send( null );
+
+}
+function updatePlaylist()
+{
+	playlists = command("list").split("<br>");	
+	var toadd = "";
+	for (var i = 0; i < playlists.length; i++) {
+		toadd += "<a class=\'dropdown-item\' onclick=\'Playlist("+i+")\'>"+playlists[i]+"</a>";
+
+	}
+	document.getElementById("PlaylistSelect").innerHTML = toadd;
+}
+function command(cmd)
+{
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function()
+	{
+		if (this.readyState == 4 && this.status==200)
+		{
+			var response = xmlHttp.responseText;
+			console.log(xmlHttp.responseText);
+			return xmlHttp.responseText;
+		}
+	}
+	xmlHttp.open( "POST", "mpcService.php?command="+cmd, false ); // false for synchronous request
+	xmlHttp.send( null );
+	return xmlHttp.onreadystatechange();
+}
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.onreadystatechange = function()
+{
+	if (this.readyState == 4 && this.status == 200) {
+		var response = xmlHttp.responseText;
+		console.log(response);
+		document.getElementById("header").innerHTML = response;
+	}
+}
+xmlHttp.open( "POST", "mpcService.php?command=status", false ); // false for synchronous request
+xmlHttp.send( null );
+	</script>
+</html>
