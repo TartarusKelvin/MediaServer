@@ -6,6 +6,8 @@ if ($_GET["command"] == "status")
 	echo exec("mpc".$port);
 if ($_GET["command"] == "toggle")
 	exec ("mpc toggle".$port);
+if ($_GET["command"] == "random")
+	exec ("mpc random".$port);
 if ($_GET["command"] == "list")
 {
 	$out = array();

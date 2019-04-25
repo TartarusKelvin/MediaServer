@@ -12,7 +12,7 @@
 	</head>
 	<body>
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-			<a class="navbar-brand" href="#">DND</a>
+			<a class="navbar-brand" href="#">Tartarus Kelvins Media Server</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
@@ -24,20 +24,18 @@
 					<li class="nav-item">
 						<a class="nav-link" href="#">Media Handler</a>
 					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="InvHandler.html">Item Weights</a>
-					</li>
 				</ul>
 			</div>
 		</nav>
 
 		<div class="container">
-		<div id=header> </div>
+			<div id=header> </div>
 			<div class="row">
 				<div class="col">
 					<input onclick="updatePlaylist()" class="btn btn-primary" type="submit"  value="Update">
 					<input onclick="command('toggle')" class="btn btn-primary" type="submit"  value="Start/Stop">
 					<input onclick="command('skip')" class="btn btn-primary" type="submit"  value="Skip">
+					<input onclick="command('random')" class="btn btn-primary" type="submit"  value="Random">
 					<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						Playlist Select
 					</button>
@@ -53,7 +51,8 @@
 		</div>
 	</body>
 	<script>
-		function Playlist(play)
+		updatePlaylist()
+function Playlist(play)
 {
 
 	var xmlHttp = new XMLHttpRequest();
@@ -86,7 +85,18 @@ function command(cmd)
 	}
 	xmlHttp.open( "POST", "mpcService.php?command="+cmd, false ); // false for synchronous request
 	xmlHttp.send( null );
-	return xmlHttp.onreadystatechange();
+	var returnval = xmlHttp.onreadystatechange();
+	xmlHttp.onreadystatechange = function()
+	{
+		if (this.readyState == 4 && this.status == 200) {
+			var response = xmlHttp.responseText;
+			console.log(response);
+			document.getElementById("header").innerHTML = response;
+		}
+	}
+	xmlHttp.open( "POST", "mpcService.php?command=status", false ); // false for synchronous request
+	xmlHttp.send( null );
+	return returnval;
 }
 var xmlHttp = new XMLHttpRequest();
 xmlHttp.onreadystatechange = function()
